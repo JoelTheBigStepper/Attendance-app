@@ -56,7 +56,7 @@ const Attendance = ({ student }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/attendance/mark", {
+      const res = await fetch("https://attendance-app-s139.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
