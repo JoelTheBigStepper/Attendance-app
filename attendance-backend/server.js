@@ -9,7 +9,9 @@ const authRoutes = require("./routes/auth");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://attendancesite.vercel.app/",
+}));
 app.use(express.json());
 
 // Basic request logger
