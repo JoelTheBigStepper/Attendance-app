@@ -4,40 +4,44 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 const Attendance = ({ student }) => {
   const [fingerprint, setFingerprint] = useState("");
   const [location, setLocation] = useState(null);
-  const [status, setStatus] = useState("Loading device and location info...");
+  const [status, setStatus] = useState("Detecting device and location...");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadFingerprint = async () => {
       try {
-        const storedFP = localStorage.getItem("fingerprint");
-        if (storedFP) {
-          setFingerprint(storedFP);
-        } else {
-          const fp = await FingerprintJS.load();
-          const result = await fp.get();
-          localStorage.setItem("fingerprint", result.visitorId);
-          setFingerprint(result.visitorId);
-        }
+        const fp = await FingerprintJS.load();
+        const result = await fp.get();
+        setFingerprint(result.visitorId);
+        setStatus((s) => s + " | Device ready");
       } catch (err) {
-        setStatus("Failed to load fingerprint");
+        setStatus("❌ Fingerprint failed");
         console.error("Fingerprint error:", err);
+        setError("Failed to get device identity.");
       }
     };
 
     const loadLocation = () => {
+      if (!navigator.geolocation) {
+        setStatus("❌ Geolocation not supported.");
+        setError("Your browser does not support location.");
+        return;
+      }
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setLocation({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
-          setStatus("Ready to mark attendance");
+          setStatus("✅ Location acquired. Ready to mark attendance.");
         },
         (err) => {
-          console.error("GPS location error:", err);
-          setStatus("Location access denied. Please enable GPS.");
-          setLocation(null); // ensure attendance cannot be marked
+          console.error("GPS error:", err);
+          setLocation(null);
+          setStatus("❌ Location denied.");
+          setError("Location access denied. Please enable GPS.");
         },
         {
           enableHighAccuracy: true,
@@ -53,16 +57,9 @@ const Attendance = ({ student }) => {
 
   const handleMarkAttendance = async () => {
     if (!fingerprint || !location) {
-      alert("Device or location info missing.");
+      setError("Device and location must be available.");
       return;
     }
-
-    console.log("📍 Sending location:", location);
-    console.log("🧑‍🎓 Student data being sent:", {
-      matric: student.matric,
-      fullName: student.fullName,
-      fingerprint,
-    });
 
     try {
       const res = await fetch("https://attendance-app-s139.onrender.com/api/attendance/mark", {
@@ -79,13 +76,15 @@ const Attendance = ({ student }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.message || "Failed to mark attendance");
+        setError(data.message || "Failed to mark attendance");
+        setMessage("");
       } else {
         setMessage(data.message);
+        setError("");
       }
     } catch (err) {
-      console.error("Attendance request error:", err);
-      setMessage("Error marking attendance.");
+      console.error("Error:", err);
+      setError("Server error while marking attendance.");
     }
   };
 
@@ -102,6 +101,7 @@ const Attendance = ({ student }) => {
       </button>
       <p className="text-sm text-gray-600">{status}</p>
       {message && <p className="mt-2 text-green-700 font-semibold">{message}</p>}
+      {error && <p className="mt-2 text-red-600 font-semibold">{error}</p>}
     </div>
   );
 };
