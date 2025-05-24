@@ -5,7 +5,7 @@ const Attendance = require("../models/Attendance");
 
 // Classroom location and radius
 const CLASSROOM_LOCATION = { lat: 8.172224, lng: 4.255816 };
-const ALLOWED_RADIUS_METERS = 100;
+const ALLOWED_RADIUS_METERS = 100000;
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
