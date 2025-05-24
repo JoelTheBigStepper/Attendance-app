@@ -9,14 +9,19 @@ const Attendance = ({ student }) => {
 
   useEffect(() => {
     const loadFingerprint = async () => {
-      const storedFP = localStorage.getItem("fingerprint");
-      if (storedFP) {
-        setFingerprint(storedFP);
-      } else {
-        const fp = await FingerprintJS.load();
-        const result = await fp.get();
-        localStorage.setItem("fingerprint", result.visitorId);
-        setFingerprint(result.visitorId);
+      try {
+        const storedFP = localStorage.getItem("fingerprint");
+        if (storedFP) {
+          setFingerprint(storedFP);
+        } else {
+          const fp = await FingerprintJS.load();
+          const result = await fp.get();
+          localStorage.setItem("fingerprint", result.visitorId);
+          setFingerprint(result.visitorId);
+        }
+      } catch (err) {
+        setStatus("Failed to load fingerprint");
+        console.error("Fingerprint error:", err);
       }
     };
 
@@ -38,8 +43,9 @@ const Attendance = ({ student }) => {
               lng: parseFloat(data.longitude),
             });
             setStatus("Ready (IP location)");
-          } catch {
-            setStatus("Location access denied");
+          } catch (err) {
+            setStatus("Location access denied or failed");
+            console.error("Location fallback error:", err);
           }
         }
       );
@@ -60,23 +66,29 @@ const Attendance = ({ student }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          studentId: student.studentId || student.matric,
+          matric: student.matric,
           fingerprint,
           location,
         }),
       });
 
       const data = await res.json();
-      setMessage(data.message);
-    } catch {
+
+      if (!res.ok) {
+        setMessage(data.message || "Failed to mark attendance");
+      } else {
+        setMessage(data.message);
+      }
+    } catch (err) {
+      console.error("Attendance request error:", err);
       setMessage("Error marking attendance.");
     }
   };
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white shadow rounded space-y-4">
-      <h2 className="text-xl font-bold">Welcome, {student.fullName || student.name}</h2>
-      <p>Matric Number: {student.matric || student.studentId}</p>
+      <h2 className="text-xl font-bold">Welcome, {student.fullName}</h2>
+      <p>Matric Number: {student.matric}</p>
       <button
         onClick={handleMarkAttendance}
         disabled={!fingerprint || !location}
