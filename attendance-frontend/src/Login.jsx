@@ -12,11 +12,12 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      const res = await fetch("https://attendance-app-s139.onrender.com", {
+      const res = await fetch("https://attendance-app-s139.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matric }),
       });
+
 
       const data = await res.json();
 
