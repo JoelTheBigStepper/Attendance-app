@@ -67,6 +67,7 @@ const Attendance = ({ student }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           matric: student.matric,
+          fullName: student.fullName,
           fingerprint,
           location,
         }),
