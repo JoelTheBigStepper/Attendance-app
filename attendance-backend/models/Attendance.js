@@ -9,9 +9,11 @@ const attendanceSchema = new mongoose.Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
+
+  fingerprint: { type: String, required: true },
 });
 
-// Prevent multiple attendance for same student on same date
-attendanceSchema.index({ student: 1, date: 1 }, { unique: true });
+// Unique index to prevent multiple attendance per student per date per device
+attendanceSchema.index({ student: 1, date: 1, fingerprint: 1 }, { unique: true });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);

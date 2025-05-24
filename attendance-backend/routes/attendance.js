@@ -32,13 +32,13 @@ router.post("/mark", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    // Check location distance
     const dist = getDistanceFromLatLonInMeters(
       location.lat,
       location.lng,
       CLASSROOM_LOCATION.lat,
       CLASSROOM_LOCATION.lng
     );
-
     console.log(`📏 Distance from classroom: ${dist} meters`);
     console.log("📍 Received location:", location);
 
@@ -48,6 +48,7 @@ router.post("/mark", async (req, res) => {
       });
     }
 
+    // Find student by matric
     const student = await Student.findOne({ matric });
     if (!student) {
       return res.status(404).json({ message: "Matric number not found" });
@@ -57,6 +58,7 @@ router.post("/mark", async (req, res) => {
       return res.status(400).json({ message: "Name does not match our records" });
     }
 
+    // Check if fingerprint conflicts on student record
     if (student.fingerprint && student.fingerprint !== fingerprint) {
       return res.status(403).json({
         message: "Attendance already marked from another device. Use the same device.",
@@ -65,23 +67,28 @@ router.post("/mark", async (req, res) => {
 
     const today = getTodayDate();
 
+    // Check if attendance already marked today from the same device
     const existingAttendance = await Attendance.findOne({
       student: student._id,
       date: today,
+      fingerprint: fingerprint,
     });
     if (existingAttendance) {
-      return res.status(409).json({ message: "Attendance already marked today." });
+      return res.status(409).json({ message: "Attendance already marked today from this device." });
     }
 
+    // Save fingerprint on student record if first time
     if (!student.fingerprint) {
       student.fingerprint = fingerprint;
       await student.save();
     }
 
+    // Save attendance with fingerprint
     const attendance = new Attendance({
       student: student._id,
       date: today,
       location,
+      fingerprint,
     });
     await attendance.save();
 
