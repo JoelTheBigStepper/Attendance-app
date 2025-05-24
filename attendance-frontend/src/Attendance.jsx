@@ -61,6 +61,13 @@ const Attendance = ({ student }) => {
       return;
     }
 
+    console.log("📍 Sending location:", location);
+    console.log("🧑‍🎓 Student data being sent:", {
+      matric: student.matric,
+      fullName: student.fullName,
+      fingerprint,
+    });
+
     try {
       const res = await fetch("https://attendance-app-s139.onrender.com/api/attendance/mark", {
         method: "POST",

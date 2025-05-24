@@ -3,11 +3,10 @@ const router = express.Router();
 const Student = require("../models/Student");
 const Attendance = require("../models/Attendance");
 
-// Classroom location and radius for geolocation check
-const CLASSROOM_LOCATION = { lat: 8.172224, lng:  4.255816}; // Example coordinates
+// Classroom location and radius
+const CLASSROOM_LOCATION = { lat: 8.172224, lng: 4.255816 };
 const ALLOWED_RADIUS_METERS = 100;
 
-// Calculate distance between lat/lng points (Haversine)
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -33,29 +32,31 @@ router.post("/mark", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Verify location
     const dist = getDistanceFromLatLonInMeters(
       location.lat,
       location.lng,
       CLASSROOM_LOCATION.lat,
       CLASSROOM_LOCATION.lng
     );
+
+    console.log(`📏 Distance from classroom: ${dist} meters`);
+    console.log("📍 Received location:", location);
+
     if (dist > ALLOWED_RADIUS_METERS) {
-      return res.status(403).json({ message: "You are not in the classroom area." });
+      return res.status(403).json({
+        message: `You are not in the classroom area. Distance = ${Math.round(dist)} meters`,
+      });
     }
 
-    // Find student by matric number
     const student = await Student.findOne({ matric });
     if (!student) {
       return res.status(404).json({ message: "Matric number not found" });
     }
 
-    // Verify name matches
     if (student.fullName.toLowerCase() !== fullName.toLowerCase()) {
       return res.status(400).json({ message: "Name does not match our records" });
     }
 
-    // Check fingerprint
     if (student.fingerprint && student.fingerprint !== fingerprint) {
       return res.status(403).json({
         message: "Attendance already marked from another device. Use the same device.",
@@ -64,7 +65,6 @@ router.post("/mark", async (req, res) => {
 
     const today = getTodayDate();
 
-    // Check for duplicate attendance
     const existingAttendance = await Attendance.findOne({
       student: student._id,
       date: today,
@@ -73,13 +73,11 @@ router.post("/mark", async (req, res) => {
       return res.status(409).json({ message: "Attendance already marked today." });
     }
 
-    // Save fingerprint if first time
     if (!student.fingerprint) {
       student.fingerprint = fingerprint;
       await student.save();
     }
 
-    // Mark attendance
     const attendance = new Attendance({
       student: student._id,
       date: today,
