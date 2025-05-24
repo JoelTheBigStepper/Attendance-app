@@ -4,7 +4,7 @@ const Student = require("../models/Student");
 const Attendance = require("../models/Attendance");
 
 // Classroom location and radius for geolocation check
-const CLASSROOM_LOCATION = { lat: 40.7128, lng: -74.006 }; // Example coordinates
+const CLASSROOM_LOCATION = { lat: 8.172224, lng:  4.255816}; // Example coordinates
 const ALLOWED_RADIUS_METERS = 100;
 
 // Calculate distance between lat/lng points (Haversine)
