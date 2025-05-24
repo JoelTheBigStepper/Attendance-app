@@ -15,6 +15,7 @@ const students = [
   { matric: "S010", fullName: "Malik alam", email: "caha@example.com" },
 ];
 
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(async () => {
