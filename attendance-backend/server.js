@@ -10,7 +10,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://attendancesite.vercel.app/",
+  origin: "https://attendancesite.vercel.app",
 }));
 app.use(express.json());
 
