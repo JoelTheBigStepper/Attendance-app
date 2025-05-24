@@ -34,19 +34,15 @@ const Attendance = ({ student }) => {
           });
           setStatus("Ready to mark attendance");
         },
-        async () => {
-          try {
-            const res = await fetch("https://ipapi.co/json");
-            const data = await res.json();
-            setLocation({
-              lat: parseFloat(data.latitude),
-              lng: parseFloat(data.longitude),
-            });
-            setStatus("Ready (IP location)");
-          } catch (err) {
-            setStatus("Location access denied or failed");
-            console.error("Location fallback error:", err);
-          }
+        (err) => {
+          console.error("GPS location error:", err);
+          setStatus("Location access denied. Please enable GPS.");
+          setLocation(null); // ensure attendance cannot be marked
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
     };

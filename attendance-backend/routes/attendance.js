@@ -3,9 +3,9 @@ const router = express.Router();
 const Student = require("../models/Student");
 const Attendance = require("../models/Attendance");
 
-// Classroom location and radius
+// Classroom GPS coordinates and allowed radius (meters)
 const CLASSROOM_LOCATION = { lat: 8.172224, lng: 4.255816 };
-const ALLOWED_RADIUS_METERS = 100000;
+const ALLOWED_RADIUS_METERS = 100 ; // Adjust as needed
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
@@ -28,74 +28,79 @@ router.post("/mark", async (req, res) => {
   try {
     const { matric, fullName, fingerprint, location } = req.body;
 
-    if (!matric || !fullName || !fingerprint || !location) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Ensure all required fields are present
+    if (!matric || !fullName || !fingerprint || !location?.lat || !location?.lng) {
+      return res.status(400).json({ message: "Missing required fields including GPS location." });
     }
 
-    // Check location distance
+    // Calculate distance from classroom
     const dist = getDistanceFromLatLonInMeters(
       location.lat,
       location.lng,
       CLASSROOM_LOCATION.lat,
       CLASSROOM_LOCATION.lng
     );
-    console.log(`📏 Distance from classroom: ${dist} meters`);
+    console.log(`📏 Distance from classroom: ${dist.toFixed(2)} meters`);
     console.log("📍 Received location:", location);
 
     if (dist > ALLOWED_RADIUS_METERS) {
       return res.status(403).json({
-        message: `You are not in the classroom area. Distance = ${Math.round(dist)} meters`,
+        message: `You are not within the classroom range. Distance: ${Math.round(dist)} meters.`,
       });
     }
 
-    // Find student by matric
+    // Validate student
     const student = await Student.findOne({ matric });
     if (!student) {
-      return res.status(404).json({ message: "Matric number not found" });
+      return res.status(404).json({ message: "Matric number not found." });
     }
 
     if (student.fullName.toLowerCase() !== fullName.toLowerCase()) {
-      return res.status(400).json({ message: "Name does not match our records" });
+      return res.status(400).json({ message: "Name does not match our records." });
     }
 
-    // Check if fingerprint conflicts on student record
+    // Validate device fingerprint
     if (student.fingerprint && student.fingerprint !== fingerprint) {
       return res.status(403).json({
-        message: "Attendance already marked from another device. Use the same device.",
+        message: "Attendance already marked from another device. Use your original device.",
       });
     }
 
     const today = getTodayDate();
 
-    // Check if attendance already marked today from the same device
+    // Prevent duplicate attendance by same device for same student
     const existingAttendance = await Attendance.findOne({
       student: student._id,
       date: today,
-      fingerprint: fingerprint,
+      fingerprint,
     });
+
     if (existingAttendance) {
-      return res.status(409).json({ message: "Attendance already marked today from this device." });
+      return res.status(409).json({
+        message: "Attendance already marked today from this device.",
+      });
     }
 
-    // Save fingerprint on student record if first time
+    // Store fingerprint for first-time users
     if (!student.fingerprint) {
       student.fingerprint = fingerprint;
       await student.save();
     }
 
-    // Save attendance with fingerprint
+    // Save attendance
     const attendance = new Attendance({
       student: student._id,
       date: today,
       location,
       fingerprint,
     });
+
     await attendance.save();
 
     res.json({ message: "Attendance marked successfully!" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Attendance error:", err);
+    res.status(500).json({ message: "Server error while marking attendance." });
   }
 });
 
