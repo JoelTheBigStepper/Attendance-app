@@ -9,6 +9,10 @@ const students = [
   { matric: "S004", fullName: "Joel OJO", email: "lie@example.com" },
   { matric: "S005", fullName: "Maximus Elect", email: "ie@example.com" },
   { matric: "S006", fullName: "Malik Salam", email: "cha@example.com" },
+  { matric: "S007", fullName: "Malik Sala", email: "ca@example.com" },
+  { matric: "S008", fullName: "Malik Sam", email: "cwha@example.com" },
+  { matric: "S009", fullName: "Malik Saam", email: "chha@example.com" },
+  { matric: "S010", fullName: "Malik alam", email: "caha@example.com" },
 ];
 
 mongoose
