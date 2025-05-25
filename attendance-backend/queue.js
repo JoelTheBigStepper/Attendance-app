@@ -1,19 +1,27 @@
-// attendance-backend/queue.js
 const Queue = require("bull");
 const Redis = require("ioredis");
 
-const redisConfig = {
+const commonOptions = {
   host: "redis-18022.c241.us-east-1-4.ec2.redns.redis-cloud.com",
-  port: 18022, // replace with your Redis port
+  port: 18022,
   password: "izohOyAMd8zryJXAezC59lXoAFQ1PfPi",
-  tls: {} // if applicable
+  tls: {
+    servername: "redis-18022.c241.us-east-1-4.ec2.redns.redis-cloud.com"
+  }
 };
 
-const redis = new Redis(redisConfig);
+const createClient = (type) => {
+  // Adjust settings based on the client type
+  const options = {
+    ...commonOptions,
+    enableReadyCheck: false,
+    maxRetriesPerRequest: null,
+  };
+  return new Redis(options);
+};
 
-// Create the queue
 const attendanceQueue = new Queue("attendanceQueue", {
-  redis: redisConfig,
+  createClient,
 });
 
 module.exports = attendanceQueue;
