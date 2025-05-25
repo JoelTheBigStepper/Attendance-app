@@ -1,23 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const processAttendanceJob = require("../utils/processAttendanceJob"); // extract the logic to a shared file
+const processAttendanceJob = require("../utils/processAttendanceJob");
 
 router.post("/mark", async (req, res) => {
   try {
-    const { matric, fullName, fingerprint, location } = req.body;
+    console.log("📥 Attendance request received:", req.body);
 
-    if (!matric || !fullName || !fingerprint || !location?.lat || !location?.lng) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
+    await processAttendanceJob({ data: req.body });
 
-    // 🔧 DIRECTLY process attendance here temporarily
-    await processAttendanceJob({ data: { matric, fullName, fingerprint, location } });
-
-    res.json({ message: "Attendance marked successfully." });
+    res.json({ message: "✅ Attendance marked successfully" });
   } catch (err) {
     console.error("❌ Attendance error:", err.message);
-    res.status(500).json({ message: err.message || "Server error." });
+    res.status(500).json({ message: err.message });
   }
-  console.log("📥 Attendance request:", req.body);
-  console.log("📤 Job added to queue successfully");
 });
+
+module.exports = router;
