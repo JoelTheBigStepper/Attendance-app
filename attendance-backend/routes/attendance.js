@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const attendanceQueue = require("../queue");
+const processAttendanceJob = require("../utils/processAttendanceJob"); // extract the logic to a shared file
 
 router.post("/mark", async (req, res) => {
   try {
@@ -10,20 +10,14 @@ router.post("/mark", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
-    // Enqueue attendance job
-    await attendanceQueue.add({
-      matric,
-      fullName,
-      fingerprint,
-      location,
-    });
+    // 🔧 DIRECTLY process attendance here temporarily
+    await processAttendanceJob({ data: { matric, fullName, fingerprint, location } });
 
-    // Respond immediately
-    res.json({ message: "Attendance request received and is being processed." });
+    res.json({ message: "Attendance marked successfully." });
   } catch (err) {
-    console.error("Failed to enqueue attendance:", err);
-    res.status(500).json({ message: "Server error. Please try again." });
+    console.error("❌ Attendance error:", err.message);
+    res.status(500).json({ message: err.message || "Server error." });
   }
+  console.log("📥 Attendance request:", req.body);
+  console.log("📤 Job added to queue successfully");
 });
-
-module.exports = router;
