@@ -22,6 +22,17 @@ function getTodayDate() {
   return new Date().toISOString().split("T")[0];
 }
 
+// 🔁 Name normalization and matching
+function normalizeName(name) {
+  return name.trim().toLowerCase().split(/\s+/);
+}
+
+function namesMatch(inputName, storedName) {
+  const inputTokens = normalizeName(inputName);
+  const storedTokens = normalizeName(storedName);
+  return inputTokens.every(token => storedTokens.includes(token));
+}
+
 module.exports = async function processAttendanceJob(job) {
   const { matric, fullName, fingerprint, location } = job.data;
 
@@ -45,7 +56,7 @@ module.exports = async function processAttendanceJob(job) {
     throw new Error("Matric number not found.");
   }
 
-  if (student.fullName.toLowerCase() !== fullName.toLowerCase()) {
+  if (!namesMatch(fullName, student.fullName)) {
     throw new Error("Full name does not match.");
   }
 
