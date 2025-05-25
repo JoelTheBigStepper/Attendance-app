@@ -14,6 +14,8 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: "https://attendancesite.vercel.app",
+  methods: ["GET", "POST"],
+  credentials: true
 }));
 app.use(helmet()); // Security headers
 app.use(compression()); // Gzip compression
@@ -40,6 +42,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Server error" });
 });
 
+app.get("/api/health", (req, res) => {
+  res.send("OK");
+});
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
