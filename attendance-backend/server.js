@@ -8,6 +8,7 @@ const morgan = require("morgan"); // optional: better logging
 
 const attendanceRoutes = require("./routes/attendance");
 const authRoutes = require("./routes/auth");
+const fingerprintRoutes = require("./routes/fingerprint");
 
 const app = express();
 
@@ -35,6 +36,7 @@ mongoose
 // Routes
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/attendance", fingerprintRoutes);
 
 // Catch-all error handler (production safe)
 app.use((err, req, res, next) => {
