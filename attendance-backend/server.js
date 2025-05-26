@@ -9,6 +9,9 @@ const morgan = require("morgan"); // optional: better logging
 const attendanceRoutes = require("./routes/attendance");
 const authRoutes = require("./routes/auth");
 const fingerprintRoutes = require("./routes/fingerprint");
+const adminAuthRoutes = require("./routes/adminAuth");
+const adminStudentRoutes = require("./routes/adminStudents");
+const adminAttendanceRoutes = require("./routes/adminAttendance");
 
 const app = express();
 
@@ -33,10 +36,22 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  // "https://your-admin-frontend-domain.com" // optional if deployed
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, // if you're using cookies or Authorization headers
+}));  
 // Routes
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/attendance", fingerprintRoutes);
+app.use("/api/admin/auth", adminAuthRoutes.router);
+app.use("/api/admin/students", adminStudentRoutes);
+app.use("/api/admin/attendance", adminAttendanceRoutes);
 
 // Catch-all error handler (production safe)
 app.use((err, req, res, next) => {
