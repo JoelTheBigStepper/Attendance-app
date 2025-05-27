@@ -19,7 +19,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000", // dev frontend
   "https://attendancesite.vercel.app", // deployed student site
-  "https://admin.attendancesite.vercel.app", // deployed admin site (if different)
+  "https://attendance-app-dkst.vercel.app/", // deployed admin site (if different)
 ];
 
 app.use(cors({
