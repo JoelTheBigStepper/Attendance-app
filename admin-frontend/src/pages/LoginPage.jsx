@@ -16,7 +16,7 @@ const LoginPage = () => {
         {
           username,
           password,
-        }
+        },
       {
   withCredentials: true // ✅ This is important
 });
