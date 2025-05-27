@@ -2,6 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
 
+function normalizeName(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
 router.post("/update-fingerprint", async (req, res) => {
   try {
     const { matric, fullName, newFingerprint } = req.body;
@@ -15,7 +23,15 @@ router.post("/update-fingerprint", async (req, res) => {
       return res.status(404).json({ message: "Student not found." });
     }
 
-    if (student.fullName.toLowerCase() !== fullName.toLowerCase()) {
+    // Normalize and compare name components
+    const inputNameParts = normalizeName(fullName);
+    const studentNameParts = normalizeName(student.fullName);
+
+    const nameMatches = inputNameParts.every(part =>
+      studentNameParts.includes(part)
+    );
+
+    if (!nameMatches) {
       return res.status(401).json({ message: "Full name does not match." });
     }
 
