@@ -15,16 +15,16 @@ const adminAttendanceRoutes = require("./routes/adminAttendance");
 
 const app = express();
 
-// ✅ CORS Setup
+// ✅ Allowed origins for CORS
 const allowedOrigins = [
   "http://localhost:3000", // dev frontend
-  "https://attendancesite.vercel.app", // deployed student site
-  "https://attendance-app-dkst.vercel.app/", // deployed admin site (if different)
+  "https://attendancesite.vercel.app", // student frontend
+  "https://attendance-app-dkst.vercel.app", // admin frontend
 ];
 
+// ✅ CORS middleware
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like Postman) or whitelisted domains
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -34,7 +34,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ Middleware
+// ✅ Handle CORS preflight requests
+app.options("*", cors());
+
+// ✅ Common middleware
 app.use(helmet());
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));

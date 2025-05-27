@@ -11,21 +11,19 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://attendance-app-backend.onrender.com/api/auth/admin-login", {
-        username,
-        password,
-      });
+      const res = await axios.post(
+        "https://attendance-app-backend.onrender.com/api/admin/auth/login",
+        {
+          username,
+          password,
+        }
+      );
       localStorage.setItem("adminToken", res.data.token);
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials");
     }
   };
-
-  console.log("Username from client:", username);
-  console.log("Password from client:", password);
-  // console.log("Admin found in DB:", admin);
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
