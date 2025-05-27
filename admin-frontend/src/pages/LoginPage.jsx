@@ -17,7 +17,9 @@ const LoginPage = () => {
           username,
           password,
         }
-      );
+      {
+  withCredentials: true // ✅ This is important
+});
       localStorage.setItem("adminToken", res.data.token);
       navigate("/dashboard");
     } catch (err) {
