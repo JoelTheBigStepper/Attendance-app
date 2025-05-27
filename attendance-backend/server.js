@@ -6,17 +6,17 @@ const compression = require("compression");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-// const attendanceRoutes = require("./routes/attendance");
-// const authRoutes = require("./routes/auth");
-// const fingerprintRoutes = require("./routes/fingerprint");
-// const adminAuthRoutes = require("./routes/adminAuth");
-// const adminStudentRoutes = require("./routes/adminStudents");
-// const adminAttendanceRoutes = require("./routes/adminAttendance");
+const attendanceRoutes = require("./routes/attendance");
+const authRoutes = require("./routes/auth");
+const fingerprintRoutes = require("./routes/fingerprint");
+const adminAuthRoutes = require("./routes/adminAuth");
+const adminStudentRoutes = require("./routes/adminStudents");
+const adminAttendanceRoutes = require("./routes/adminAttendance");
 
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:3000", 
+  // "http://localhost:3000", 
   "https://attendancesite.vercel.app",
   "https://attendance-app-dkst.vercel.app",
 ];
@@ -48,12 +48,12 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// app.use("/api/attendance", attendanceRoutes);
-// app.use("/api/auth", authRoutes);
-// app.use("/api/attendance", fingerprintRoutes);
-// app.use("/api/admin/auth", adminAuthRoutes.router);
-// app.use("/api/admin/students", adminStudentRoutes);
-// app.use("/api/admin/attendance", adminAttendanceRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/attendance", fingerprintRoutes);
+app.use("/api/admin/auth", adminAuthRoutes.router);
+app.use("/api/admin/students", adminStudentRoutes);
+app.use("/api/admin/attendance", adminAttendanceRoutes);
 
 app.get("/api/health", (req, res) => {
   res.send("OK");
