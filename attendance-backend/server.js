@@ -33,7 +33,7 @@ app.use(cors({
 }));
 
 
-app.options("/{*any}", cors());
+// app.options("/{*any}", cors());
 
 app.use(helmet());
 app.use(compression());
