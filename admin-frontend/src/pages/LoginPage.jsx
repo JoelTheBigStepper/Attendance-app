@@ -13,17 +13,15 @@ const LoginPage = () => {
     try {
       const res = await axios.post(
         "https://attendance-app-backend.onrender.com/api/admin/auth/login",
-        {
-          username,
-          password,
-        },
-      {
-  withCredentials: true // ✅ This is important
-});
+        { username, password },
+        { withCredentials: true } // ✅ Correct placement
+      );
+
       localStorage.setItem("adminToken", res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid credentials");
+      console.error("Login error:", err);
+      setError("Invalid credentials or server error.");
     }
   };
 

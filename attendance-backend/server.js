@@ -16,11 +16,24 @@ const adminAttendanceRoutes = require("./routes/adminAttendance");
 const app = express();
 
 const allowedOrigins = [
-  "https://localhost:3000", 
+  "http://localhost:3000", 
   "https://attendancesite.vercel.app",
   "https://attendance-app-dkst.vercel.app",
 ];
 
+// ✅ Handle preflight OPTIONS requests
+app.options("*", cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
+// ✅ Main CORS middleware
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -31,6 +44,7 @@ app.use(cors({
   },
   credentials: true,
 }));
+
 
 
 
