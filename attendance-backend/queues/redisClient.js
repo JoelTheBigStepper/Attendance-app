@@ -4,7 +4,7 @@ const redisConnection = new Redis({
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
   password: process.env.REDIS_PASSWORD,
-  tls: {}, // <== Required for Redis Cloud secure connection
+  tls: {},
 });
 
 module.exports = { redisConnection };

@@ -1,10 +1,8 @@
-// routes/adminStudents.js
 const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
 const { verifyToken } = require("./adminAuth");
 
-// List students (with search & pagination)
 router.get("/", verifyToken, async (req, res) => {
   const { search = "", page = 1, limit = 20 } = req.query;
   const query = {
@@ -20,7 +18,6 @@ router.get("/", verifyToken, async (req, res) => {
   res.json({ students, total });
 });
 
-// Add student
 router.post("/", verifyToken, async (req, res) => {
   const { matric, fullName } = req.body;
   const exists = await Student.findOne({ matric });
@@ -30,7 +27,6 @@ router.post("/", verifyToken, async (req, res) => {
   res.json(student);
 });
 
-// Edit student
 router.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   const { matric, fullName } = req.body;
@@ -39,14 +35,12 @@ router.put("/:id", verifyToken, async (req, res) => {
   res.json(student);
 });
 
-// Delete student
 router.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   await Student.findByIdAndDelete(id);
   res.json({ message: "Deleted successfully" });
 });
 
-// Bulk import (example using XLSX)
 const multer = require("multer");
 const xlsx = require("xlsx");
 const upload = multer({ dest: "uploads/" });

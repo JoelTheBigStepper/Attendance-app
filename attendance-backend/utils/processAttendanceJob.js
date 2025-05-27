@@ -1,4 +1,3 @@
-// utils/processAttendanceJob.js
 const Student = require("../models/Student");
 const Attendance = require("../models/Attendance");
 
@@ -22,7 +21,6 @@ function getTodayDate() {
   return new Date().toISOString().split("T")[0];
 }
 
-// 🔁 Name normalization and matching
 function normalizeName(name) {
   return name.trim().toLowerCase().split(/\s+/);
 }

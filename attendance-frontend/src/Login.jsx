@@ -24,7 +24,6 @@ const Login = ({ onLogin }) => {
       if (!res.ok) {
         setError(data.message || "Login failed");
       } else {
-        // Optionally validate fullName matches server record
         if (data.fullName.toLowerCase() !== fullName.trim().toLowerCase()) {
           setError("Full name does not match our records");
           return;

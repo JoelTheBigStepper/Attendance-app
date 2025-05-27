@@ -7,7 +7,6 @@ const studentSchema = new mongoose.Schema({
   fingerprint: { type: String },
 });
 
-// ⚡ Indexes for performance
 studentSchema.index({ matric: 1 }, { unique: true });
 studentSchema.index({ fingerprint: 1 });
 

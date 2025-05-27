@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
 
-// Login: check if student exists and return their data
 router.post("/login", async (req, res) => {
   const { matric } = req.body;
   if (!matric) return res.status(400).json({ message: "matric is required" });

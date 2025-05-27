@@ -1,12 +1,12 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const xlsx = require("xlsx");
-const Student = require("./models/Student"); // Update this if your path is different
+const Student = require("./models/Student");
 
 async function importStudents() {
   await mongoose.connect(process.env.MONGO_URI);
 
-  const workbook = xlsx.readFile("./students.xlsx"); // Update path if needed
+  const workbook = xlsx.readFile("./students.xlsx"); 
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const data = xlsx.utils.sheet_to_json(sheet, { header: ["matric", "fullName"], range: 1 });

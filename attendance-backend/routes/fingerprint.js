@@ -23,7 +23,6 @@ router.post("/update-fingerprint", async (req, res) => {
       return res.status(404).json({ message: "Student not found." });
     }
 
-    // Normalize and compare name components
     const inputNameParts = normalizeName(fullName);
     const studentNameParts = normalizeName(student.fullName);
 
@@ -35,7 +34,6 @@ router.post("/update-fingerprint", async (req, res) => {
       return res.status(401).json({ message: "Full name does not match." });
     }
 
-    // Update fingerprint
     student.fingerprint = newFingerprint;
     await student.save();
 

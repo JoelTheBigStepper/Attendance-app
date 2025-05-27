@@ -1,5 +1,3 @@
-// models/UsedDeviceLog.js
-
 const mongoose = require("mongoose");
 
 const usedDeviceLogSchema = new mongoose.Schema({
