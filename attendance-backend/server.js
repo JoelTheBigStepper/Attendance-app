@@ -16,7 +16,7 @@ const adminAttendanceRoutes = require("./routes/adminAttendance");
 const app = express();
 
 const allowedOrigins = [
-  // "http://localhost:3000", 
+  "https://localhost:3000", 
   "https://attendancesite.vercel.app",
   "https://attendance-app-dkst.vercel.app",
 ];
