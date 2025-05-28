@@ -21,8 +21,8 @@ const allowedOrigins = [
   "https://attendance-app-dkst.vercel.app",
 ];
 
-// ✅ Handle preflight OPTIONS requests
-app.options("*", cors({
+
+app.options("/{*any}", cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -33,7 +33,7 @@ app.options("*", cors({
   credentials: true,
 }));
 
-// ✅ Main CORS middleware
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
